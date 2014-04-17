@@ -1,2 +1,3 @@
 add_ssh_keys_from_github:
   usernames: []
+  owner: root
