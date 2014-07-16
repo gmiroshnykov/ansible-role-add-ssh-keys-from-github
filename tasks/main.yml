@@ -1,6 +1,6 @@
-- name: install httplib2
-  sudo: true
-  pip: name=httplib2
+#- name: install httplib2
+  #sudo: true
+  #pip: name=httplib2
 
 - name: get SSH keys from GitHub
   uri: >
