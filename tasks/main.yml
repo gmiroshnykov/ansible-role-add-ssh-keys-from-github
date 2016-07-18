@@ -1,6 +1,6 @@
-- name: install httplib2
-  sudo: true
-  pip: name=httplib2
+#- name: install httplib2
+  #sudo: true
+  #pip: name=httplib2
 
 - name: get SSH keys from GitHub
   uri: >
@@ -9,15 +9,23 @@
   register: ssh_keys
   with_items: add_ssh_keys_from_github.usernames
 
-- name: add SSH key labels to ~/.ssh/authorized_keys
+- name: ensure /home/{{add_ssh_keys_from_github.owner}}/.ssh exists
+  file: dest="/home/{{add_ssh_keys_from_github.owner}}/.ssh" state=directory
+
+- name: ensure /home/{{add_ssh_keys_from_github.owner}}/.ssh/authorized_keys exists
+  action: >
+    command touch /home/{{add_ssh_keys_from_github.owner}}/.ssh/authorized_keys
+    creates=/home/{{add_ssh_keys_from_github.owner}}/.ssh/authorized_keys
+
+- name: add SSH key labels to /home/{{add_ssh_keys_from_github.owner}}/.ssh/authorized_keys
   lineinfile: >
-    dest=~/.ssh/authorized_keys
+    dest="/home/{{add_ssh_keys_from_github.owner}}/.ssh/authorized_keys"
     line="# {{ item }}"
   with_items: add_ssh_keys_from_github.usernames
 
-- name: add SSH keys to ~/.ssh/authorized_keys
+- name: add SSH keys to /home/{{add_ssh_keys_from_github.owner}}/.ssh/authorized_keys
   lineinfile: >
-    dest=~/.ssh/authorized_keys
+    dest="/home/{{add_ssh_keys_from_github.owner}}/.ssh/authorized_keys"
     line="{{ item.0.content }}"
     insertafter={{ item.1 }}
   with_together:
